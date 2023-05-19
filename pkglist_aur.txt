@@ -1,0 +1,12 @@
+swww-git
+grimblast-git
+hyprland-legacyrender
+sddm-theme-corners-git
+swaylock-effects-git
+libinput-gestures
+ranger-git
+rofi-lbonn-wayland-git
+nwg-look
+waybar-hyprland
+flavours
+wlogout
