@@ -13,8 +13,8 @@ Tutorial](https://youtube.com/watch?v=nMnWTq2H-N0)
 
 * Open **Disk Utility**
   * **View** > **Show all devices**
-  * Select top-level SSD and then **Partitions** to view all partitions
-* Terminal `diskutil list`
+  * Select the top-level SSD and then **Partition** to view all partitions
+* In terminal run `diskutil list`
   * Look for Asahi partitions and specifically EFI filesystem e.g. "EFI EFI -
     ASAHI"
   * Delete EFI volume with `diskutil eraseVolume JHFS+ drive /dev/diskXyX`
@@ -22,8 +22,10 @@ Tutorial](https://youtube.com/watch?v=nMnWTq2H-N0)
     `/dev/disk0s4` but could be different
 * Go back to **Disk Utility**
   * Select the top-level SSD and then **Partition**
-  * Remove the 3 partitions for Asahi, leaving the "Macintosh HD" and also first
-  and last partitions on the disk
+  * Remove the 3 partitions for Asahi
+    * Start by removing the partition named `Asahi Linux`
+    * Remove the ~500MB partition which was for Linux EFI
+    * Remove the partition for the old Linux filesystem
   * After applying the changes reboot
 * You'll likely see a Recovery Assistant message like "Custom kernel failed to
   boot"
@@ -34,9 +36,13 @@ Tutorial](https://youtube.com/watch?v=nMnWTq2H-N0)
 Check out the Asahi project for latest guidance but for today:
 
 * `curl https://alx.sh | sh`
+
+The installer will pretty much hold your hand through the process but for
+reference here are my "answers" and notes for the prompts.
+
 * `N` on "Expert mode"
 * `r: Resize an existing partition to make space for a new OS`
-* Pick how much space to leave for macOS (did 40% for macOS today)
+* Pick how much space to leave for macOS (I did `40%` for macOS)
 * `f: Install an OS into free space`
 * `2: Asahi Linux Minimal (Arch Linux ARM)`
 * Pick how much space on new partition for Linux (default is max; I did max)
@@ -47,10 +53,11 @@ Check out the Asahi project for latest guidance but for today:
 
 ### Configure Arch/Hyprland
 
-* At **Alarm login** enter `root` for username and password
+* At **alarm login:** enter `root` for username and password
 * Configure networking by creating the file `/etc/iwd/main.conf` according to
-  Section 4.3 of the Arch Wiki page for `iwd` (may need to create the directory
-in `/etc`)
+  Section 4.3 of the [Arch Wiki page for
+  `iwd`](https://wiki.archlinux.org/title/iwd#Enable_built-in_network_configuration)
+  (may need to create the directory in `/etc`)
 
 ```
 [General]
@@ -66,13 +73,15 @@ NameResolvingService=systemd
   * `systemctl start iwd`
 
 At this point you should have active networking with a wired connection. If
-wired check for IP address (`ip a`), try `ping` on something to test. If you
-need to configure WiFi: 
+wired check for IP address (`ip a`), try `ping` on something to test, etc. If
+you need to configure WiFi:
 
 * Run `iwctl`
 * Inside iwd:
-* `device list`
-* `station wlan0 connect <your SSID/wireless network name here>`
+* You can run `device list` to see a list of all networking devices to find the
+  name of yours, but I imagine it'll be `wlan0` for anybody running one of
+  these machines
+* `station wlan0 connect <SSID>`
   * Enter the password for your wireless network when prompted.
 * `exit`
 
@@ -84,19 +93,19 @@ Check for IP address and connectivity.
   a local server. In my experience repository actions were, not surprisingly,
 way faster when I switched to a US mirror.
 
-* Set locale by uncommenting correct line in `/etc/locale.gen` and placing that
-  same value as the top/only line in `/etc/locale.conf` and running
-`locale-gen`.
+* Set locale by uncommenting the correct line in `/etc/locale.gen`, placing
+  that same value as the top/only line in `/etc/locale.conf` and running
+  `locale-gen`.
   * In my case that was `LANG=en_US.UTF-8`
 * Set your timezone using `timedatectl`. Check out out the [Arch
   Wiki](https://wiki.archlinux.org/title/System_time#Time_zone) or other parts
-of the internet for more info.
+  of the internet for more info.
 
 ```
 timedatectl set-timezone America/Chicago
 ```
 
-* Update the system with 
+* Update the system with
 
 ```
 pacman -Syu
@@ -109,7 +118,7 @@ pacman -Syu
 useradd -m -G wheel -s /bin/bash <username>
 ```
 
-* Install `sudo` so your new user can become root as needed 
+* Install `sudo` so your new user can become root as needed
 
 ```
 pacman -S sudo
@@ -129,34 +138,34 @@ and edit the file
 passwd <username>
 ```
 
-* Reboot and sign in with new user
+Next get NetworkManager installed and enabled. It will offer a better
+networking experience for normal daily use.
 
-Next get NetworkManager installed, enabled, and use it to connect to WiFi
-since it'll be a better experience for normal use.
-
-* Install NetworkManager 
+* Install NetworkManager
 
 ```
-sudo pacman -S networkmanager
+pacman -S networkmanager
 ```
 
-* Enable NetworkManager 
+* Enable NetworkManager
 
 ```
-sudo systemctl enable NetworkManager.service
+systemctl enable NetworkManager.service
 ```
 
-* Reboot (not strictly necessary but it's quick enough that you might as well)
+* Reboot and sign in with your new user account
 
 * Connect to WiFi using `nmcli`. Replace `<SSID>` with the name of your
-  wireless network and `<password>` with your WiFi password.
+  wireless network. The `--ask` will prompt you for your password.
 
 ```
-nmcli device wifi connect <SSID> password <password>
+nmcli --ask device wifi connect <SSID>
 ```
 
 Check that you're getting a good IP address with `ip a`, able to ping other IP
-addresses and/or hostnames with `ping 8.8.8.8`/`ping google.com`, etc.
+addresses and/or hostnames with `ping 8.8.8.8`/`ping google.com`, etc. I
+sometimes have needed to run the above `nmcli...` command twice to get it to
+connect for some reason.
 
 #### Move to edge kernel
 
@@ -178,21 +187,25 @@ After those steps, reboot to load the new kernel.
 We're going to need an AUR helper so install Yay:
 
 ```
-$ pacman -S --needed git base-devel
-$ git clone https://aur.archlinux.org/yay.git
-$ cd yay
-$ makepkg -si
+sudo pacman -S --needed git base-devel
+git clone https://aur.archlinux.org/yay.git
+cd yay
+makepkg -si
 ```
 
 ##### Install Hyprland and other packages
 
+> This is kinda borked right now. I've split out the packages into two lists so
+> that the bulk of the packages can be installed from a list -- the pacman
+> packages. Yay is not liking what I'm doing here so I'm installing those by
+> just typing each one into a normal `yay -S`.
+
 You can install all the packages you'll need plus a few more by using the
 `baseApps.txt` file in this repo. This is a collection of packages I installed
 during setup, and in the time shortly thereafter as I realized what I was
-missing. You can just copy and paste the contents of that file or clone the
-repo, edit it to add/remove packages, and then run the command below to install
-everything in one shot with `m1hypr/baseApps.txt` being whatever the path is
-to the file on your system.
+missing. You can clone the repo, edit that file to add/remove packages, and
+then run the command below to install everything in one shot with
+`m1hypr/baseApps.txt` being whatever the path is to the file on your system.
 
 ```
 yay -S --needed - < m1hypr/baseApps.txt
