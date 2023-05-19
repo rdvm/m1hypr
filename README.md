@@ -49,8 +49,8 @@ reference here are my "answers" and notes for the prompts.
 * `2: Asahi Linux Minimal (Arch Linux ARM)`
 * Pick how much space on new partition for Linux (default is max; I did max)
 * Name for OS (default is "Asahi Linux"; I did "Asahi Linux")
-* Follow instructions on screen to reboot in recovery and select the right OS
-  to load etc.
+* Follow instructions on the screen to reboot and select the right OS to load
+  etc.
 * Follow the instructions to finish dual boot setup and reboot into Asahi
 
 ### Configure Arch/Hyprland
@@ -84,7 +84,7 @@ you need to configure WiFi:
   name of yours, but I imagine it'll be `wlan0` for anybody running one of
   these machines
 * `station wlan0 connect <SSID>`
-  * Enter the password for your wireless network when prompted.
+  * Enter the password for your wireless network when prompted
 * `exit`
 
 Check for IP address and connectivity.
@@ -96,7 +96,7 @@ Check for IP address and connectivity.
 surprisingly, way faster when I switched to a US mirror.
 
 * Set locale by uncommenting the correct line in `/etc/locale.gen`, placing
-  that same value as the top/only line in `/etc/locale.conf` and running
+  that same value as the top/only line in `/etc/locale.conf`, and running
   `locale-gen`.
   * In my case that was `LANG=en_US.UTF-8`
 * Set your timezone using `timedatectl`. Check out out the [Arch
@@ -208,17 +208,20 @@ And here are a few more packages you'll very likely want, but this list is not
 exhaustive and none of these are strictly necessary.
 
   * `sddm` &mdash; SDDM display manager/login screen/greeter
-  * `polkit-gnome` or `polkit-kde-agent` &mdash; authentication agent that might be
-    needed for some GUI applications
+  * `polkit-gnome` or `polkit-kde-agent` &mdash; authentication agent that
+    might be needed for some GUI applications
   * `xdg-desktop-portal-hyprland` &mdash; [Hyperland Desktop Portal - Hyprland
     Wiki](https://wiki.hyprland.org/Useful-Utilities/Hyprland-desktop-portal/)
   * `swayidle` &mdash; idle management daemon for Wayland
-  * `swaylock` (or `swaylock-effects-git` if you want something a little fancier) &mdash; screen locker for Wayland
-  * `wofi` (This is an application launcher/run menu, and even if you
-    ultimately decide to go with something else you might want it to get off
-the ground, as you'll see later.)
-  * `alacritty` (The default terminal for Hyprland is Kitty, and it's currently
-    broken on Asahi Edge so you'll want some other terminal emulator.)
+  * `swaylock` (or `swaylock-effects-git` if you want something a little
+    fancier) &mdash; screen locker for Wayland
+  * `wofi`
+    * This is an application launcher/run menu, and even if you ultimately
+      decide to go with something else you might want it for now to get off the
+ground, as you'll see later.
+  * `alacritty`
+    * The default terminal for Hyprland is Kitty, and it's currently broken on
+      Asahi Edge so you'll want some other terminal emulator.
 
 > The intention was to have one list of all the packages and install them all
 > with `yay`, but I'm on the fence about that concept and was having issues
