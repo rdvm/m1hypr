@@ -1,5 +1,4 @@
 alacritty
-base-devel
 bluedevil
 blueman
 bluez-tools
@@ -9,7 +8,6 @@ btop
 chromium
 dunst
 firefox
-git
 gnome-themes-extra
 grim
 gucharmap
@@ -34,8 +32,6 @@ starship
 stow
 swappy
 swayidle
-telegram-desktop
-thunar
 tmux
 ttf-jetbrains-mono-nerd
 ttf-terminus-nerd

@@ -1,7 +1,9 @@
 # m1hypr
-A basic collection of resources for getting Hyprland running from Asahi Minimal Install
 
-## MBA Minimal Asahi + Hyprland setup
+This is really just my way of documenting this process for myself, but I
+figured I'd put it out there in case it was helpful to anybody else.
+
+## M1 MacBook Air Minimal Asahi + Hyprland setup
 
 If you've already installed Asahi and want to start from scratch, continue
 here. Otherwise jump to [Asahi Minimal Install.](#asahi-minimal-install)
@@ -57,7 +59,7 @@ reference here are my "answers" and notes for the prompts.
 * Configure networking by creating the file `/etc/iwd/main.conf` according to
   Section 4.3 of the [Arch Wiki page for
   `iwd`](https://wiki.archlinux.org/title/iwd#Enable_built-in_network_configuration)
-  (may need to create the directory in `/etc`)
+  (you very likely will need to create the 'iwd' directory in `/etc`)
 
 ```
 [General]
@@ -89,9 +91,9 @@ Check for IP address and connectivity.
 
 #### Update Arch & create user
 
-* Update `/etc/pacman.d/mirrorlist` to comment out global server and uncomment
-  a local server. In my experience repository actions were, not surprisingly,
-way faster when I switched to a US mirror.
+* Update `/etc/pacman.d/mirrorlist` to comment out the global server and
+  uncomment a local server. In my experience repository actions were, not
+surprisingly, way faster when I switched to a US mirror.
 
 * Set locale by uncommenting the correct line in `/etc/locale.gen`, placing
   that same value as the top/only line in `/etc/locale.conf` and running
@@ -120,14 +122,12 @@ useradd -m -G wheel -s /bin/bash <username>
 
 * Install `sudo` so your new user can become root as needed
 
-```
-pacman -S sudo
-```
+``` pacman -S sudo ```
 * Add your user to the sudoers group. One way to do that is to uncomment an
   existing line in `/etc/sudoers` that grants root privileges to members of the
-`wheel` group. If you're familiar with Vim, just run `visudo`, and it'll open
-the file for editing. Otherwise you can use Nano or some other editor to open
-and edit the file
+  `wheel` group. If you're familiar with Vim, just run `visudo`, and it'll open
+  the file for editing. Otherwise you can use Nano or some other editor you've
+  installed to open and edit the file
   * Navigate to the line `# %wheel ALL=(ALL) ALL`
   * Uncomment the line by removing the `#` so it's just `%wheel ALL=(ALL) ALL`
   * Write and quit
@@ -156,7 +156,7 @@ systemctl enable NetworkManager.service
 * Reboot and sign in with your new user account
 
 * Connect to WiFi using `nmcli`. Replace `<SSID>` with the name of your
-  wireless network. The `--ask` will prompt you for your password.
+  wireless network.
 
 ```
 nmcli --ask device wifi connect <SSID>
@@ -195,39 +195,44 @@ makepkg -si
 
 ##### Install Hyprland and other packages
 
-> This is kinda borked right now. I've split out the packages into two lists so
-> that the bulk of the packages can be installed from a list -- the pacman
-> packages. Yay is not liking what I'm doing here so I'm installing those by
-> just typing each one into a normal `yay -S`.
-
-You can install all the packages you'll need plus a few more by using the
-`baseApps.txt` file in this repo. This is a collection of packages I installed
-during setup, and in the time shortly thereafter as I realized what I was
-missing. You can clone the repo, edit that file to add/remove packages, and
-then run the command below to install everything in one shot with
-`m1hypr/baseApps.txt` being whatever the path is to the file on your system.
-
-```
-yay -S --needed - < m1hypr/baseApps.txt
-```
-
 At a minimum you'll need to install `hyprland-legacyrender` from the AUR since
-that's the version of Hyprland required for these machines. And here are a few
-more packages you'll very likely want, but this list is not exhaustive and none
-of these are strictly necessary.
+that's the version of Hyprland required for these machines, so install it first
+to avoid any possible dependency issues that might trigger the installation of
+a different version.
 
-  * `sddm`
-  * `polkit-gnome` or `polkit-kde-agent`
-  * `xdg-desktop-portal-hyprland`
-  * `swayidle`
-  * `swaylock` or `swaylock-effects-git` if you want something a little fancier
+```
+yay -S hyprland-legacyrenderer
+```
+
+And here are a few more packages you'll very likely want, but this list is not
+exhaustive and none of these are strictly necessary.
+
+  * `sddm` &mdash; SDDM display manager/login screen/greeter
+  * `polkit-gnome` or `polkit-kde-agent` &mdash; authentication agent that might be
+    needed for some GUI applications
+  * `xdg-desktop-portal-hyprland` &mdash; [Hyperland Desktop Portal - Hyprland
+    Wiki](https://wiki.hyprland.org/Useful-Utilities/Hyprland-desktop-portal/)
+  * `swayidle` &mdash; idle management daemon for Wayland
+  * `swaylock` (or `swaylock-effects-git` if you want something a little fancier) &mdash; screen locker for Wayland
   * `wofi` (This is an application launcher/run menu, and even if you
     ultimately decide to go with something else you might want it to get off
 the ground, as you'll see later.)
   * `alacritty` (The default terminal for Hyprland is Kitty, and it's currently
     broken on Asahi Edge so you'll want some other terminal emulator.)
 
-In order to use SDDM to login and start Hyprland, you'll need to enable it.
+> The intention was to have one list of all the packages and install them all
+> with `yay`, but I'm on the fence about that concept and was having issues
+> with that when testing this out so I've split the package lists. Installing
+> all the standard packages from the `pkglist.txt` file with `pacman` is
+> working just fine if you want to do that, and since there aren't that many
+> AUR packages, even if you want them all, typing them in as one big `yay -S
+> <packagename> <packagename>` command isn't too bad.
+
+```
+sudo pacman -S --needed - < m1hypr/pkglist.txt
+```
+
+In order to use SDDM for login and to start Hyprland, you'll need to enable it.
 
 ```
 sudo systemctl enable sddm
@@ -239,7 +244,7 @@ you're using an autogenerated Hyprland config and there will be a couple basic
 keybindings displayed as well. Unfortunately, with the default terminal being
 Kitty, the binding to open a terminal won't work.
 
-In the default config `mod + r` will open a Wofi application launcher/run menu,
-so you can use that to launch whatever terminal emulator you installed so that
-you can open up the file `~/.config/hypr/hyprland.conf` to begin editing,
-starting, perhaps, by replacing `kitty` with your terminal.
+In the default config `mod + r` (`command + r`) will open a Wofi application
+launcher/run menu, so you can use that to launch whatever terminal emulator you
+installed so that you can open up the file `~/.config/hypr/hyprland.conf` to
+begin editing, starting, perhaps, by replacing `kitty` with your terminal.
