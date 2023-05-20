@@ -6,7 +6,6 @@ rofi-lbonn-wayland-git
 sddm-config-editor-git
 sddm-sugar-candy-git
 sddm-sugar-dark
-sddm-swish
 sddm-theme-corners-git
 swaylock-effects-git
 swww-git
