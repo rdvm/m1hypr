@@ -223,6 +223,7 @@ ground, as you'll see later.
     * The default terminal for Hyprland is Kitty, and it's currently broken on
       Asahi Edge so you'll want some other terminal emulator.
 
+> **Note** <br>
 > The intention was to have one list of all the packages and install them all
 > with `yay`, but I'm on the fence about that concept and was having issues
 > with that when testing this out so I've split the package lists. Installing
