@@ -1,11 +1,6 @@
-1password
-fastfetch-git
-google-chrome
 grimblast-git
-hyprland-git
 libva-nvidia-driver-git
 nwg-look
-ranger-git
 rofi-lbonn-wayland-git
 sddm-config-editor-git
 sddm-git
@@ -15,5 +10,3 @@ swaylock-effects-git
 swww-git
 waybar-hyprland-git
 wlogout
-wyeb-git
-yay
